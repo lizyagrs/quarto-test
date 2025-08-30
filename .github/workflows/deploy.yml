@@ -1,0 +1,31 @@
+name: Deploy Quarto to GitHub Pages
+
+on:
+  push:
+    branches: [ main ] # 触发部署的分支
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          persist-credentials: true
+
+      - name: Setup Quarto
+        uses: quarto-dev/quarto-actions/setup@v2
+        with:
+          version: 1.4.552 # 推荐指定版本
+
+      - name: Render site
+        run: quarto render
+
+      - name: Deploy to GitHub Pages
+        if: github.event_name == 'push'
+        uses: peaceiris/actions-gh-pages@v3
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: ./_site # Quarto 默认输出目录
+          publish_branch: gh-pages # GitHub Pages 使用的分支
+          force_orphan: true # 强制推送，清除旧内容
