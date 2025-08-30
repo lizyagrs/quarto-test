@@ -19,7 +19,7 @@ jobs:
       - name: Setup Quarto
         uses: quarto-dev/quarto-actions/setup@v2
         with:
-          version: latest
+          version: 1.4.552
 
       # ✅ 第三步：渲染网站
       - name: Render site
