@@ -2,30 +2,38 @@ name: Deploy Quarto to GitHub Pages
 
 on:
   push:
-    branches: [ main ] # 触发部署的分支
+    branches: [ main ]
 
 jobs:
   deploy:
     runs-on: ubuntu-latest
     steps:
+      # ✅ 第一步：检出代码（必须正确配置！）
       - name: Checkout repository
         uses: actions/checkout@v4
         with:
           persist-credentials: true
+          fetch-depth: 0
 
+      # ✅ 第二步：安装 Quarto
       - name: Setup Quarto
         uses: quarto-dev/quarto-actions/setup@v2
         with:
-          version: 1.4.552 # 推荐指定版本
+          version: latest
 
+      # ✅ 第三步：渲染网站
       - name: Render site
         run: quarto render
 
+      # ✅ 第四步：部署到 GitHub Pages
       - name: Deploy to GitHub Pages
-        if: github.event_name == 'push'
         uses: peaceiris/actions-gh-pages@v3
         with:
+          # ✅ 使用 GitHub 自动提供的令牌
           github_token: ${{ secrets.GITHUB_TOKEN }}
-          publish_dir: ./_site # Quarto 默认输出目录
-          publish_branch: gh-pages # GitHub Pages 使用的分支
-          force_orphan: true # 强制推送，清除旧内容
+          # ✅ 指向 Quarto 的输出目录
+          publish_dir: ./_site
+          # ✅ 目标分支
+          publish_branch: gh-pages
+          # ✅ 强制推送，覆盖旧内容
+          force_orphan: true
